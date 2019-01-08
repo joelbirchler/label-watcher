@@ -10,8 +10,7 @@ This is primarily an example usage of the [Kubernetes Go client](https://github.
 
 ## TODO:
 
-- Get node labels
-- Watch node labels
-- Tests, see: https://github.com/kubernetes/kubernetes/tree/master/staging/src/k8s.io/client-go/examples/fake-client
-- Kubernetes rbac deployment (and in-cluster execution)
+- Watch node labels and demo a read channel
 - Serve html
+- Tests, see: https://github.com/kubernetes/kubernetes/tree/master/staging/src/k8s.io/client-go/examples/fake-client
+- Refactor/structure
