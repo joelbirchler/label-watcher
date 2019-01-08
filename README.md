@@ -13,4 +13,3 @@ This is primarily an example usage of the [Kubernetes Go client](https://github.
 - Watch node labels and demo a read channel
 - Serve html
 - Tests, see: https://github.com/kubernetes/kubernetes/tree/master/staging/src/k8s.io/client-go/examples/fake-client
-- Refactor/structure
