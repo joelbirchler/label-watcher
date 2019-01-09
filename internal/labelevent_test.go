@@ -4,12 +4,12 @@ import (
 	"testing"
 
 	"k8s.io/api/core/v1"
-	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 func fakeNode(name string) *v1.Node {
 	return &v1.Node{
-		ObjectMeta: metaV1.ObjectMeta{Name: name},
+		ObjectMeta: metav1.ObjectMeta{Name: name},
 	}
 }
 

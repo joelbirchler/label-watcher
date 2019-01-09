@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 
 	"k8s.io/api/core/v1"
-	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	corev1 "k8s.io/client-go/kubernetes/typed/core/v1"
 	"k8s.io/client-go/tools/clientcmd"
@@ -36,7 +36,7 @@ func Connect() (corev1.CoreV1Interface, error) {
 // TODO: create LabelEvents from existing + delta node objects
 // TODO: channel closing (channel may need to be passed so can be deferred closed in main)
 func WatchNodeLabels(api corev1.CoreV1Interface) <-chan LabelEvent {
-	watcher, err := api.Nodes().Watch(metaV1.ListOptions{})
+	watcher, err := api.Nodes().Watch(metav1.ListOptions{})
 	if err != nil {
 		log.Fatal(err)
 	}
