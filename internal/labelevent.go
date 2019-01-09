@@ -14,5 +14,31 @@ type LabelEvent struct {
 
 // NewLabelEvent creates a LabelEvent from the diff of a previous node and a current one
 func NewLabelEvent(prev, current *v1.Node) *LabelEvent {
-	return &LabelEvent{NodeName: current.Name}
+	event := &LabelEvent{
+		NodeName: current.Name,
+		Modified: make(map[string]string),
+		Added:    make(map[string]string),
+		Removed:  make(map[string]string),
+	}
+
+	// FIXME: tidy this up
+	for key, prevVal := range prev.Labels {
+		curVal, ok := current.Labels[key]
+		if ok {
+			if curVal != prevVal {
+				event.Modified[key] = curVal
+			}
+		} else {
+			event.Removed[key] = prevVal
+		}
+	}
+
+	for key, curVal := range current.Labels {
+		_, ok := prev.Labels[key]
+		if !ok {
+			event.Added[key] = curVal
+		}
+	}
+
+	return event
 }
