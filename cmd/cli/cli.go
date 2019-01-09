@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 
 	lw "github.com/joelbirchler/label-watcher/internal"
@@ -12,5 +13,8 @@ func main() {
 		log.Fatal(err)
 	}
 
-	lw.WatchNodeLabels(api)
+	ch := lw.WatchNodeLabels(api)
+	for event := range ch {
+		fmt.Printf("-- %v\n", event)
+	}
 }

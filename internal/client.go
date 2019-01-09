@@ -1,7 +1,6 @@
 package internal
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -34,44 +33,31 @@ func Connect() (corev1.CoreV1Interface, error) {
 // WatchNodeLabels watches nodes for label changes. LabelEvents will be sent on the
 // returned channel upon startup and on subsequent label updates.
 //
-// TODO: return <-chan LabelEvent (name only) and print
 // TODO: create LabelEvents from existing + delta node objects
-// TODO: channel closing
-func WatchNodeLabels(api corev1.CoreV1Interface) {
+// TODO: channel closing (channel may need to be passed so can be deferred closed in main)
+func WatchNodeLabels(api corev1.CoreV1Interface) <-chan LabelEvent {
 	watcher, err := api.Nodes().Watch(metaV1.ListOptions{})
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	nodes := make(map[string]v1.Node)
+	nodes := make(map[string]*v1.Node)
+	labelChan := make(chan LabelEvent)
 
-	ch := watcher.ResultChan()
-	for event := range ch {
-		if n, ok := event.Object.(*v1.Node); ok {
-			eventNode := *n
+	go func() {
+		watcherChan := watcher.ResultChan()
 
-			// FIXME: messy
-			existingNode, ok := nodes[eventNode.Name]
-			if ok {
-				fmt.Printf("Existing (%v)...", sameLabels(existingNode, eventNode))
+		for event := range watcherChan {
+			eventNode, ok := event.Object.(*v1.Node)
+			if !ok {
+				log.Println("Watch received unexpected object.")
 			} else {
+				existingNode := nodes[eventNode.Name]
 				nodes[eventNode.Name] = eventNode
+				labelChan <- *NewLabelEvent(existingNode, eventNode)
 			}
-
-			printNode(eventNode)
-
-		} else {
-			log.Println("Watch received unexpected object.")
 		}
-	}
-}
+	}()
 
-// FIXME: This goes somewhere, but not here (remember that the server will use the same writer interface)
-// First factor printing out of watcher. We just want a read channel
-func printNode(node v1.Node) {
-	fmt.Println(node.Name)
-	for k, v := range node.GetLabels() {
-		fmt.Printf("  %s = %s\n", k, v)
-	}
-	fmt.Println()
+	return labelChan
 }
