@@ -22,22 +22,28 @@ func NewLabelEvent(prev, current *v1.Node) *LabelEvent {
 	}
 
 	// FIXME: tidy this up
-	for key, prevVal := range prev.Labels {
-		curVal, ok := current.Labels[key]
-		if ok {
-			if curVal != prevVal {
-				event.Modified[key] = curVal
+	if prev != nil && current != nil {
+		for key, prevVal := range prev.Labels {
+			curVal, ok := current.Labels[key]
+			if ok {
+				if curVal != prevVal {
+					event.Modified[key] = curVal
+				}
+			} else {
+				event.Removed[key] = prevVal
 			}
-		} else {
-			event.Removed[key] = prevVal
+		}
+
+		for key, curVal := range current.Labels {
+			_, ok := prev.Labels[key]
+			if !ok {
+				event.Added[key] = curVal
+			}
 		}
 	}
 
-	for key, curVal := range current.Labels {
-		_, ok := prev.Labels[key]
-		if !ok {
-			event.Added[key] = curVal
-		}
+	if prev == nil && current != nil {
+		event.Added = current.Labels
 	}
 
 	return event

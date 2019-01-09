@@ -33,7 +33,7 @@ func Connect() (corev1.CoreV1Interface, error) {
 // WatchNodeLabels watches nodes for label changes. LabelEvents will be sent on the
 // returned channel upon startup and on subsequent label updates.
 //
-// TODO: create LabelEvents from existing + delta node objects
+// TODO: only send label event when actual change has occurred
 // TODO: channel closing (channel may need to be passed so can be deferred closed in main)
 func WatchNodeLabels(api corev1.CoreV1Interface) <-chan LabelEvent {
 	watcher, err := api.Nodes().Watch(metav1.ListOptions{})
