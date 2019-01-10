@@ -15,6 +15,6 @@ func main() {
 
 	ch := lw.WatchNodeLabels(api)
 	for event := range ch {
-		fmt.Printf("-- %v\n", event)
+		fmt.Printf("%s\n", &event)
 	}
 }

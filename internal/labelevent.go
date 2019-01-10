@@ -1,6 +1,8 @@
 package internal
 
 import (
+	"fmt"
+
 	"k8s.io/api/core/v1"
 )
 
@@ -33,6 +35,27 @@ func NewLabelEvent(prev, current *v1.Node) *LabelEvent {
 	}
 
 	return event
+}
+
+func (event *LabelEvent) String() string {
+	s := fmt.Sprintf("%s:\n", event.NodeName)
+
+	actions := []struct {
+		bucket map[string]string
+		symbol string
+	}{
+		{event.Modified, "Δ"},
+		{event.Added, "+"},
+		{event.Removed, "-"},
+	}
+
+	for _, action := range actions {
+		for k, v := range action.bucket {
+			s += fmt.Sprintf("%s %s = %s\n", action.symbol, k, v)
+		}
+	}
+
+	return s
 }
 
 // addModified looks for any changed values with the same key, and adds them to the event
