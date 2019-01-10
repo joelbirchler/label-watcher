@@ -21,30 +21,44 @@ func NewLabelEvent(prev, current *v1.Node) *LabelEvent {
 		Removed:  make(map[string]string),
 	}
 
-	// FIXME: tidy this up
-	if prev != nil && current != nil {
-		for key, prevVal := range prev.Labels {
-			curVal, ok := current.Labels[key]
-			if ok {
-				if curVal != prevVal {
-					event.Modified[key] = curVal
-				}
-			} else {
-				event.Removed[key] = prevVal
-			}
-		}
-
-		for key, curVal := range current.Labels {
-			_, ok := prev.Labels[key]
-			if !ok {
-				event.Added[key] = curVal
-			}
-		}
-	}
-
-	if prev == nil && current != nil {
+	switch {
+	case prev == nil && current != nil:
 		event.Added = current.Labels
+	case prev != nil && current == nil:
+		event.Removed = prev.Labels
+	case prev != nil && current != nil:
+		event.addModified(prev, current)
+		event.addAdded(prev, current)
+		event.addRemoved(prev, current)
 	}
 
 	return event
+}
+
+// addModified looks for any changed values with the same key, and adds them to the event
+func (event *LabelEvent) addModified(prev, current *v1.Node) {
+	for key, prevVal := range prev.Labels {
+		curVal, ok := current.Labels[key]
+		if ok && curVal != prevVal {
+			event.Modified[key] = curVal
+		}
+	}
+}
+
+// addAdded looks for any new keys in current that were not found in previous, and adds them to the event
+func (event *LabelEvent) addAdded(prev, current *v1.Node) {
+	for k, v := range current.Labels {
+		if _, ok := prev.Labels[k]; !ok {
+			event.Added[k] = v
+		}
+	}
+}
+
+// addRemoved looks for any keys in previous that were dropped in current, and adds them to the event
+func (event *LabelEvent) addRemoved(prev, current *v1.Node) {
+	for k, v := range prev.Labels {
+		if _, ok := current.Labels[k]; !ok {
+			event.Removed[k] = v
+		}
+	}
 }
