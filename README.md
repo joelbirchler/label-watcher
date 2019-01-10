@@ -10,7 +10,6 @@ This is primarily an example usage of the [Kubernetes Go client](https://github.
 
 ## TODO:
 
-- Watch node labels and demo a read channel
 - Serve html
 - Clean and docs pass
 - Client tests [see fake-client](https://github.com/kubernetes/kubernetes/blob/master/staging/src/k8s.io/client-go/examples/fake-client/main_test.go)
