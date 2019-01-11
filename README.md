@@ -12,7 +12,7 @@ There are two binaries. They both perform the same basic function: watch a kuber
 
 Run `make` to build both binaries and generate self-signed certs for TLS. There are individual targets for testing (`make test`), running (`make cli-run` and `make server-run`), and creating certs (`make cert`).
 
-Lwserver accepts a few flags. Run `./lwserver -h` after building to see them.
+Lwserver accepts a few optional flags. Run `./lwserver -h` after building to see them.
 
 
 ## Connecting to Kubernetes
