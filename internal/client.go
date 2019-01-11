@@ -45,6 +45,7 @@ func WatchNodeLabels(api corev1.CoreV1Interface) <-chan LabelEvent {
 	go func() {
 		watcherChan := watcher.ResultChan()
 
+		// Listen for Node events on the watcherChan
 		for event := range watcherChan {
 			eventNode, ok := event.Object.(*v1.Node)
 			if !ok {

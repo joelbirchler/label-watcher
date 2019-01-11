@@ -1,4 +1,4 @@
-all: test cli-build server-build
+all: test certs cli-build server-build
 
 test:
 	go test -v github.com/joelbirchler/label-watcher/internal
