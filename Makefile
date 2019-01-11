@@ -1,4 +1,4 @@
-all: test cli-build
+all: test cli-build server-build
 
 test:
 	go test -v github.com/joelbirchler/label-watcher/internal
@@ -8,3 +8,9 @@ cli-build:
 
 cli-run: cli-build
 	./lwcli
+
+server-build:
+	go build -o lwserver cmd/server/server.go
+
+server-run: server-build
+	./lwserver

@@ -8,6 +8,5 @@ This is primarily an example usage of the [Kubernetes Go client](https://github.
 
 ## TODO:
 
-- Serve html
 - Https
 - Clean and docs pass
