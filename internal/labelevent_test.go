@@ -3,63 +3,72 @@ package internal
 import (
 	"reflect"
 	"testing"
+
+	"k8s.io/api/core/v1"
 )
 
 func TestNewLabelEvent(t *testing.T) {
 	tables := []struct {
-		prev, current,
-		modified, added, removed map[string]string
+		prev, current *v1.Node
+		event         LabelEvent
 	}{
 		{
-			map[string]string{"a": "1", "b": "2"}, // prev
-			map[string]string{"a": "4", "c": "3"}, // current
-			map[string]string{"a": "4"},           // modified
-			map[string]string{"c": "3"},           // added
-			map[string]string{"b": "2"},           // removed
+			mockNode(map[string]string{"a": "1", "b": "2"}),
+			mockNode(map[string]string{"a": "4", "c": "3"}),
+			LabelEvent{
+				NodeName: "myNode",
+				Modified: map[string]string{"a": "4"},
+				Added:    map[string]string{"c": "3"},
+				Removed:  map[string]string{"b": "2"},
+			},
 		},
 		{
-			nil, // prev
-			map[string]string{"a": "1", "b": "2"}, // current
-			map[string]string{},                   // modified
-			map[string]string{"a": "1", "b": "2"}, // added
-			map[string]string{},                   // removed
+			mockNode(nil),
+			mockNode(map[string]string{"a": "1", "b": "2"}),
+			LabelEvent{
+				NodeName: "myNode",
+				Modified: map[string]string{},
+				Added:    map[string]string{"a": "1", "b": "2"},
+				Removed:  map[string]string{},
+			},
 		},
 		{
-			map[string]string{"a": "1", "b": "2"}, // prev
-			map[string]string{"a": "1", "b": "2"}, // current
-			map[string]string{},                   // modified
-			map[string]string{},                   // added
-			map[string]string{},                   // removed
+			mockNode(map[string]string{"a": "1", "b": "2"}),
+			mockNode(map[string]string{"a": "1", "b": "2"}),
+			LabelEvent{
+				NodeName: "myNode",
+				Modified: map[string]string{},
+				Added:    map[string]string{},
+				Removed:  map[string]string{},
+			},
 		},
 		{
-			map[string]string{"a": "1", "b": "2"}, // prev
-			map[string]string{},                   // current
-			map[string]string{},                   // modified
-			map[string]string{},                   // added
-			map[string]string{"a": "1", "b": "2"}, // removed
+			mockNode(map[string]string{"a": "1", "b": "2"}),
+			mockNode(map[string]string{}),
+			LabelEvent{
+				NodeName: "myNode",
+				Modified: map[string]string{},
+				Added:    map[string]string{},
+				Removed:  map[string]string{"a": "1", "b": "2"},
+			},
 		},
 		{
-			map[string]string{"a": "1"}, // prev
-			map[string]string{"a": "2"}, // current
-			map[string]string{"a": "2"}, // modified
-			map[string]string{},         // added
-			map[string]string{},         // removed
+			mockNode(map[string]string{"a": "1"}),
+			mockNode(map[string]string{"a": "2"}),
+			LabelEvent{
+				NodeName: "myNode",
+				Modified: map[string]string{"a": "2"},
+				Added:    map[string]string{},
+				Removed:  map[string]string{},
+			},
 		},
 	}
 
 	for _, table := range tables {
-		event := NewLabelEvent(mockNode(table.prev), mockNode(table.current))
+		event := NewLabelEvent(table.prev, table.current)
 
-		if !reflect.DeepEqual(event.Modified, table.modified) {
-			t.Errorf("Modified was incorrect, got: %s, want: %s", event.Modified, table.modified)
-		}
-
-		if !reflect.DeepEqual(event.Added, table.added) {
-			t.Errorf("Added was incorrect, got: %s, want: %s", event.Added, table.added)
-		}
-
-		if !reflect.DeepEqual(event.Removed, table.removed) {
-			t.Errorf("Removed was incorrect, got: %s, want: %s", event.Removed, table.removed)
+		if !reflect.DeepEqual(*event, table.event) {
+			t.Errorf("Event was incorrect, got: %s, want: %s", *event, table.event)
 		}
 	}
 }
