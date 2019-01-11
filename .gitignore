@@ -1,3 +1,4 @@
 label-watcher
 lwcli
 lwserver
+*.pem

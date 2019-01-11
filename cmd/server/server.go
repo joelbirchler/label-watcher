@@ -10,12 +10,14 @@ import (
 )
 
 var (
-	port     string
-	eventLog []lw.LabelEvent
+	port, tlsCert, tlsKey string
+	eventLog              []lw.LabelEvent
 )
 
 func init() {
-	flag.StringVar(&port, "port", "8080", "Port to listen on")
+	flag.StringVar(&port, "port", "8443", "Port to listen on")
+	flag.StringVar(&tlsCert, "tls-cert", "tls-cert.pem", "TLS concatenation of the server's certificate, any intermediates, and the CA's certificate")
+	flag.StringVar(&tlsKey, "tls-key", "tls-key.pem", "TLS matching private key")
 	flag.Parse()
 }
 
@@ -26,7 +28,7 @@ func main() {
 	http.HandleFunc("/healthz", healthzHandler)
 
 	log.Printf("Serving on :%s\n", port)
-	err := http.ListenAndServe(":"+port, nil)
+	err := http.ListenAndServeTLS(":"+port, tlsCert, tlsKey, nil)
 	if err != http.ErrServerClosed {
 		log.Fatalln("Could not start origin server:", err)
 	}
