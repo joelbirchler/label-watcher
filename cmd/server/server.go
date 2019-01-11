@@ -45,6 +45,8 @@ func eventLogHandler(w http.ResponseWriter, req *http.Request) {
 	}
 }
 
+// Watches for changes and appends them to a log. Note that this approach is not sustainable. The
+// log will append until it runs of capacity-- either in memory or index range.
 func watcher() {
 	// Create a simple client
 	api, err := lw.Connect()
