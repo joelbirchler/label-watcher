@@ -1,6 +1,7 @@
 module github.com/joelbirchler/label-watcher
 
 require (
+	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/ghodss/yaml v1.0.0 // indirect
 	github.com/gogo/protobuf v1.2.0 // indirect
 	github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b // indirect
@@ -27,4 +28,5 @@ require (
 	k8s.io/apimachinery v0.0.0-20181126123303-08e1968f78a1
 	k8s.io/client-go v8.0.0+incompatible
 	k8s.io/klog v0.1.0 // indirect
+	k8s.io/kube-openapi v0.0.0-20181114233023-0317810137be // indirect
 )

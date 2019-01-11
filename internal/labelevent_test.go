@@ -3,19 +3,7 @@ package internal
 import (
 	"reflect"
 	"testing"
-
-	"k8s.io/api/core/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
-
-func fakeNode(labels map[string]string) *v1.Node {
-	return &v1.Node{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:   "myNode",
-			Labels: labels,
-		},
-	}
-}
 
 func TestNewLabelEvent(t *testing.T) {
 	tables := []struct {
@@ -60,7 +48,7 @@ func TestNewLabelEvent(t *testing.T) {
 	}
 
 	for _, table := range tables {
-		event := NewLabelEvent(fakeNode(table.prev), fakeNode(table.current))
+		event := NewLabelEvent(mockNode(table.prev), mockNode(table.current))
 
 		if !reflect.DeepEqual(event.Modified, table.modified) {
 			t.Errorf("Modified was incorrect, got: %s, want: %s", event.Modified, table.modified)
