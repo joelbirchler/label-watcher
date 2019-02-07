@@ -39,24 +39,25 @@ func WatchNodeLabels(api corev1.CoreV1Interface) <-chan LabelEvent {
 		log.Fatal(err)
 	}
 
-	nodes := make(map[string]*v1.Node)
 	labelChan := make(chan LabelEvent)
 
 	go func() {
 		watcherChan := watcher.ResultChan()
+		nodes := make(map[string]*v1.Node)
 
 		// Listen for Node events on the watcherChan
 		for event := range watcherChan {
 			eventNode, ok := event.Object.(*v1.Node)
 			if !ok {
 				log.Println("Watch received unexpected object.")
-			} else {
-				prevNode := nodes[eventNode.Name]
-				nodes[eventNode.Name] = eventNode
-				// on change, send an event to the the label channel
-				if prevNode == nil || eventNode == nil || !reflect.DeepEqual(prevNode.Labels, eventNode.Labels) {
-					labelChan <- *NewLabelEvent(prevNode, eventNode)
-				}
+				continue
+			}
+
+			prevNode := nodes[eventNode.Name]
+			nodes[eventNode.Name] = eventNode
+			// on change, send an event to the the label channel
+			if prevNode == nil || eventNode == nil || !reflect.DeepEqual(prevNode.Labels, eventNode.Labels) {
+				labelChan <- *NewLabelEvent(prevNode, eventNode)
 			}
 		}
 	}()
